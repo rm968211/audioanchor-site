@@ -83,6 +83,9 @@
     border: 1px solid var(--card-border); border-radius: 14px;
     overflow: hidden; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
   }
+  .screenshot-frame + .screenshot-frame { margin-top: 40px; }
+  .screenshot-frame.small { max-width: 300px; }
+  .screenshot-caption { text-align: center; color: var(--text-faint); font-size: 13px; margin: 12px 0 0; }
 
   .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 8px; }
   .feature { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 22px; }
@@ -158,10 +161,15 @@
 
 <section class="alt">
   <div class="wrap">
-    <h2>See it in action</h2>
+    <h2>Screenshots</h2>
     <div class="screenshot-frame">
       <img src="assets/screenshot-app.png" alt="AudioAnchor's settings window, showing protected playback and recording devices">
     </div>
+    <p class="screenshot-caption">The settings window</p>
+    <div class="screenshot-frame small">
+      <img src="assets/screenshot-tray.png" alt="AudioAnchor running in the Windows system tray">
+    </div>
+    <p class="screenshot-caption">Runs quietly in the tray</p>
   </div>
 </section>
 
