@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AudioAnchor — Keep your sound where it belongs</title>
+<meta name="description" content="AudioAnchor is a free Windows tray app that restores your preferred speakers and microphones whenever Windows changes the default audio devices.">
+<link rel="icon" href="assets/favicon.ico">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --bg-alt: #0d1219;
+    --card: #121822;
+    --card-border: #1f2a38;
+    --text: #eef2f6;
+    --text-dim: #9aa7b5;
+    --text-faint: #6b7787;
+    --accent: #1eaff4;
+    --accent-dim: #1690cc;
+    --accent-bg: rgba(30, 175, 244, 0.12);
+    --amber: #e0a458;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.55;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  img { max-width: 100%; display: block; }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+
+  header.site {
+    padding: 22px 0;
+    border-bottom: 1px solid var(--card-border);
+  }
+  header.site .wrap { display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; }
+  .brand img { width: 28px; height: 28px; }
+  nav.site a { color: var(--text-dim); margin-left: 22px; font-size: 14px; }
+  nav.site a:hover { color: var(--text); }
+
+  .hero { padding: 72px 0 56px; text-align: center; }
+  .hero img.logo { width: 92px; height: 92px; margin: 0 auto 22px; }
+  .hero h1 { font-size: 40px; font-weight: 650; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .hero p.tagline { color: var(--text-dim); font-size: 18px; max-width: 640px; margin: 0 auto 34px; }
+
+  .downloads { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 13px 22px; border-radius: 8px; font-size: 15px; font-weight: 600;
+    text-decoration: none; border: 1px solid transparent; cursor: pointer;
+  }
+  .btn:hover { text-decoration: none; }
+  .btn-primary { background: var(--accent); color: #071019; }
+  .btn-primary:hover { background: var(--accent-dim); }
+  .btn-secondary { background: var(--card); color: var(--text); border-color: var(--card-border); }
+  .btn-secondary:hover { background: #17202c; }
+  .btn small { font-weight: 400; opacity: 0.75; }
+
+  .all-versions { font-size: 14px; color: var(--text-faint); margin-bottom: 6px; }
+  .version-tag { font-size: 13px; color: var(--text-faint); margin-top: 2px; }
+
+  .note {
+    max-width: 640px; margin: 30px auto 0; text-align: left;
+    background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius);
+    padding: 14px 18px; font-size: 13.5px; color: var(--text-dim);
+  }
+  .note strong { color: var(--text); }
+
+  section { padding: 56px 0; }
+  section.alt { background: var(--bg-alt); border-top: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border); }
+  h2 { font-size: 26px; text-align: center; margin: 0 0 40px; font-weight: 650; }
+
+  .screenshot-frame {
+    max-width: 620px; margin: 0 auto;
+    border: 1px solid var(--card-border); border-radius: 14px;
+    overflow: hidden; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
+  }
+
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 8px; }
+  .feature { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 22px; }
+  .feature .icon { color: var(--accent); font-size: 22px; margin-bottom: 10px; }
+  .feature h3 { font-size: 16px; margin: 0 0 8px; }
+  .feature p { font-size: 14px; color: var(--text-dim); margin: 0; }
+
+  .support { text-align: center; }
+  .support p { color: var(--text-dim); max-width: 520px; margin: 0 auto 22px; }
+  .coffee-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--card); border: 1px solid var(--card-border); color: var(--text);
+    padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 600;
+  }
+  .coffee-btn:hover { background: #17202c; text-decoration: none; border-color: #ffdd0055; }
+  .coffee-btn .cup { font-size: 16px; }
+
+  footer.site { padding: 34px 0 46px; border-top: 1px solid var(--card-border); }
+  footer.site .wrap { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; justify-content: space-between; }
+  footer.site p { color: var(--text-faint); font-size: 13px; margin: 0; }
+  footer.site .links a { color: var(--text-faint); font-size: 13px; margin-right: 18px; }
+  footer.site .links a:hover { color: var(--text-dim); }
+
+  @media (max-width: 720px) {
+    .hero h1 { font-size: 30px; }
+    .features { grid-template-columns: 1fr; }
+    footer.site .wrap { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <div class="brand"><img src="assets/logo.png" alt=""> AudioAnchor</div>
+    <nav class="site">
+      <a href="#download">Download</a>
+      <a href="#features">Features</a>
+      <a href="https://github.com/rm968211/audio-anchor">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <img class="logo" src="assets/logo.png" alt="AudioAnchor logo">
+    <h1>Keep your sound where it belongs.</h1>
+    <p class="tagline">
+      Tired of Windows switching your speakers or microphone every time something gets plugged in?
+      AudioAnchor is a free, lightweight Windows tray app that puts your preferred playback and
+      recording devices back the moment Windows changes them.
+    </p>
+
+    <div id="download" class="downloads">
+      <a id="download-setup" class="btn btn-primary" href="https://github.com/rm968211/audio-anchor/releases/latest">
+        ⬇ Download for Windows <small>Installer (.exe)</small>
+      </a>
+      <a id="download-zip" class="btn btn-secondary" href="https://github.com/rm968211/audio-anchor/releases/latest">
+        Portable ZIP
+      </a>
+    </div>
+    <p class="version-tag" id="version-label">Windows 11 x64</p>
+    <p class="all-versions"><a href="https://github.com/rm968211/audio-anchor/releases">See all versions on GitHub →</a></p>
+
+    <div class="note">
+      <strong>Windows may warn you before you run it.</strong> AudioAnchor's builds aren't
+      code-signed yet, so you may see "Windows protected your PC" from Microsoft Defender
+      SmartScreen. This is normal for a new, unsigned app — click <strong>More info</strong>, then
+      <strong>Run anyway</strong>.
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>See it in action</h2>
+    <div class="screenshot-frame">
+      <img src="assets/screenshot-app.png" alt="AudioAnchor's settings window, showing protected playback and recording devices">
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <h2>Why AudioAnchor</h2>
+    <div class="features">
+      <div class="feature">
+        <div class="icon">⚓</div>
+        <h3>Set once, stays put</h3>
+        <p>Choose your speakers, headset, and microphones. AudioAnchor restores them the instant
+        Windows tries to switch to something else — plugging in a monitor, a dock, or a random
+        USB device won't hijack your audio again.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🔌</div>
+        <h3>Handles disconnects gracefully</h3>
+        <p>Unplug your preferred device and Windows can use a temporary replacement — AudioAnchor
+        remembers your choice and switches straight back the moment it reconnects.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🔒</div>
+        <h3>Local, lightweight, and free</h3>
+        <p>No account, no telemetry, no background service beyond a small tray app. Free for any
+        noncommercial use under the
+        <a href="https://github.com/rm968211/audio-anchor/blob/master/LICENSE.md">PolyForm Noncommercial License</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt support">
+  <div class="wrap">
+    <h2>Support the project</h2>
+    <p>AudioAnchor is free and always will be. If it's saved you from fighting with Windows audio
+    settings, a coffee is always appreciated — but never expected.</p>
+    <a class="coffee-btn" href="https://www.buymeacoffee.com/rm968211" target="_blank" rel="noopener">
+      <span class="cup">☕</span> Buy me a coffee
+    </a>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <p>&copy; <span id="year"></span> rm968211. AudioAnchor is source-available under the PolyForm Noncommercial License.</p>
+    <div class="links">
+      <a href="https://github.com/rm968211/audio-anchor">GitHub</a>
+      <a href="https://github.com/rm968211/audio-anchor/releases">Releases</a>
+      <a href="https://github.com/rm968211/audio-anchor/blob/master/LICENSE.md">License</a>
+      <a href="https://github.com/rm968211/audio-anchor/blob/master/docs/SIGNING.md">Why the SmartScreen warning?</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  (async function () {
+    const setupBtn = document.getElementById('download-setup');
+    const zipBtn = document.getElementById('download-zip');
+    const versionLabel = document.getElementById('version-label');
+    try {
+      const res = await fetch('https://api.github.com/repos/rm968211/audio-anchor/releases/latest');
+      if (!res.ok) return;
+      const data = await res.json();
+      const setup = (data.assets || []).find(a => a.name.endsWith('-Setup.exe'));
+      const zip = (data.assets || []).find(a => a.name.endsWith('-Portable.zip'));
+      if (setup) setupBtn.href = setup.browser_download_url;
+      if (zip) zipBtn.href = zip.browser_download_url;
+      if (data.tag_name) versionLabel.textContent = `Windows 11 x64 · ${data.tag_name}`;
+    } catch (e) {
+      // Offline or rate-limited: buttons already fall back to the GitHub releases page.
+    }
+  })();
+</script>
+
+</body>
+</html>
